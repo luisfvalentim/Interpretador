@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <CLSCompliant>false</CLSCompliant> <!-- Adicione esta linha -->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Generated/Grammar/CSubsetBaseListener.cs" />
+    <Compile Include="Generated/Grammar/CSubsetBaseVisitor.cs" />
+    <Compile Include="Generated/Grammar/CSubsetLexer.cs" />
+    <Compile Include="Generated/Grammar/CSubsetListener.cs" />
+    <Compile Include="Generated/Grammar/CSubsetParser.cs" />
+    <Compile Include="Generated/Grammar/CSubsetVisitor.cs" />
+    <Compile Include="Program.cs" /> <!-- Garanta que este arquivo existe -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+  </ItemGroup>
+</Project>

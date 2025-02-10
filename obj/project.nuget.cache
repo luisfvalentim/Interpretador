@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "Xj4SNVoXkTCWVf7T0P9b4JG7abfptHTDV+LPdRoTXsZlyokMy5+A5lEmLLq+1aEBAAnkUorX0FPXBUg7Rq8f7w==",
+  "success": true,
+  "projectFilePath": "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/Interpretador.csproj",
+  "expectedPackageFiles": [
+    "/Users/luisfelipevalentimmenezes/.nuget/packages/antlr4.runtime.standard/4.13.1/antlr4.runtime.standard.4.13.1.nupkg.sha512"
+  ],
+  "logs": []
+}

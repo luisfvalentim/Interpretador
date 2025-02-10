@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <!-- Altere para .NET 8.0 -->
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Use a versão mais recente do ANTLR4 -->
+    <PackageReference Include="Antlr4.Runtime.Standard" Version="4.13.1" />
+  </ItemGroup>
+
+  <!-- Adicione esta linha para incluir os arquivos gerados -->
+  <ItemGroup>
+    <Compile Include="Generated/**/*.cs" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,62 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/Interpretador.csproj": {}
+  },
+  "projects": {
+    "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/Interpretador.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/Interpretador.csproj",
+        "projectName": "Interpretador",
+        "projectPath": "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/Interpretador.csproj",
+        "packagesPath": "/Users/luisfelipevalentimmenezes/.nuget/packages/",
+        "outputPath": "/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/luisfelipevalentimmenezes/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net7.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net7.0": {
+            "targetAlias": "net7.0",
+            "projectReferences": {}
+          }
+        }
+      },
+      "frameworks": {
+        "net7.0": {
+          "targetAlias": "net7.0",
+          "dependencies": {
+            "Antlr4.Runtime.Standard": {
+              "target": "Package",
+              "version": "[4.13.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/7.0.410/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

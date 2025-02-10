@@ -1,0 +1,17 @@
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Interpretador
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Interpretador.deps.json
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Interpretador.runtimeconfig.json
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Interpretador.dll
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Interpretador.pdb
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/bin/Debug/net7.0/Antlr4.Runtime.Standard.dll
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.csproj.AssemblyReference.cache
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.GeneratedMSBuildEditorConfig.editorconfig
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.AssemblyInfoInputs.cache
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.AssemblyInfo.cs
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.csproj.CoreCompileInputs.cache
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.csproj.CopyComplete
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.dll
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/refint/Interpretador.dll
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.pdb
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/Interpretador.genruntimeconfig.cache
+/Users/luisfelipevalentimmenezes/Documents/Faculdade/Interpretador/Interpretador/obj/Debug/net7.0/ref/Interpretador.dll
