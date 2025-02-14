@@ -15,12 +15,20 @@ namespace Interpretador.Interpreter
         private Dictionary<string, Dictionary<string, object>> unions = new Dictionary<string, Dictionary<string, object>>();
 
         private Dictionary<string, object> macros = new Dictionary<string, object>();
+
+        private string currentFunction = "";
+
+        private static readonly object UNINITIALIZED_VALUE = new object();
+
+
+
         public override object VisitDeclaration(CSubsetParser.DeclarationContext context)
         {
             string varName = context.ID().GetText();
             string type = context.type().GetText();
-            object? value = null;
+            object value = null;  // Inicializamos como null para checar se será modificado depois
 
+            // Verifica se é um array
             if (context.ChildCount > 3 && context.GetChild(1).GetText() == "[")
             {
                 int size = int.Parse(context.NUMBER().GetText());
@@ -42,6 +50,7 @@ namespace Interpretador.Interpreter
                 return null;
             }
 
+            // Se houver uma expressão de inicialização, calcula o valor
             if (context.expression() != null)
             {
                 value = Visit(context.expression());
@@ -55,10 +64,29 @@ namespace Interpretador.Interpreter
                     throw new Exception($"Erro: Tentativa de atribuir Float a variável int '{varName}'.");
                 }
             }
+            else
+            {
+                // Definir valores padrão explícitos para garantir inicialização
+                value = type switch
+                {
+                    "int" => 0,
+                    "float" => 0.0f,
+                    "char" => '\0',
+                    "string" => "",
+                    _ => throw new Exception($"Erro: Tipo desconhecido '{type}'.")
+                };
+            }
 
+            // Armazena a variável na memória como "inicializada"
             memory[varName] = value;
+
+            // Debug opcional: pode ser removido após a verificação
+            //Console.WriteLine($"[DEBUG] Variável '{varName}' declarada e inicializada com {value}.");
+
             return null;
         }
+
+
 
         public override object VisitAssignmentExpression(CSubsetParser.AssignmentExpressionContext context)
         {
@@ -68,6 +96,12 @@ namespace Interpretador.Interpreter
             if (!memory.ContainsKey(varName))
             {
                 throw new Exception($"Erro: Variável '{varName}' não declarada.");
+            }
+
+            // Se a variável for do tipo string, garante que o valor seja uma string antes da verificação de tipo
+            if (memory[varName] is string && value is not string)
+            {
+                value = value.ToString(); // Converte qualquer valor para string
             }
 
             if (context.expression().Length > 1)
@@ -99,6 +133,7 @@ namespace Interpretador.Interpreter
 
             return null;
         }
+
 
 
         public override object VisitAdditiveExpression(CSubsetParser.AdditiveExpressionContext context)
@@ -176,15 +211,30 @@ namespace Interpretador.Interpreter
         {
             if (context.ChildCount == 1)
             {
-                return Visit(context.GetChild(0));
+                return Visit(context.GetChild(0)); // Apenas repassa para a próxima expressão
             }
 
-            var left = Convert.ToBoolean(Visit(context.GetChild(0)));
+            if (context.ChildCount == 2) // Caso do operador unário '!'
+            {
+                var value = Visit(context.GetChild(1));
+                return !Convert.ToBoolean(Convert.ToInt32(value)); // Converte corretamente para booleano
+            }
+
+            // Caso seja um operador binário '&&' ou '||'
+            var leftValue = Visit(context.GetChild(0));
+            var rightValue = Visit(context.GetChild(2));
+
+            // Garante que qualquer número diferente de 0 seja tratado como true
+            bool left = Convert.ToInt32(leftValue) != 0;
+            bool right = Convert.ToInt32(rightValue) != 0;
+
             var op = context.GetChild(1).GetText();
-            var right = Convert.ToBoolean(Visit(context.GetChild(2)));
 
             return op == "&&" ? left && right : left || right;
         }
+
+
+
 
         public override object VisitEqualityExpression(CSubsetParser.EqualityExpressionContext context)
         {
@@ -251,6 +301,13 @@ namespace Interpretador.Interpreter
                     return macros[varName];
                 }
 
+                // Verifica se a variável foi declarada
+                if (!memory.ContainsKey(varName))
+                {
+                    throw new Exception($"Erro: Variável '{varName}' não declarada.");
+                }
+
+                // Verifica inicialização antes de acessar
                 CheckInitialization(varName);
 
                 if (context.ChildCount > 3 && context.GetChild(1).GetText() == "[")
@@ -309,6 +366,7 @@ namespace Interpretador.Interpreter
 
                 if (memory.ContainsKey(varName))
                 {
+                    CheckInitialization(varName);
                     return memory[varName];
                 }
 
@@ -317,6 +375,7 @@ namespace Interpretador.Interpreter
 
             return base.VisitPrimary(context);
         }
+
 
 
 
@@ -365,8 +424,14 @@ namespace Interpretador.Interpreter
                 returnValue = Visit(context.expression());
             }
 
+            if (currentFunction == "main")
+            {
+                return returnValue;
+            }
+
             throw new ReturnException(returnValue);
         }
+
 
         public override object VisitFunctionCall(CSubsetParser.FunctionCallContext context)
         {
@@ -554,25 +619,36 @@ namespace Interpretador.Interpreter
 
             if (functionName == "ftoa")
             {
-                if (context.expression().Length != 1)
+                if (context.expression().Length < 1 || context.expression().Length > 2)
                 {
-                    throw new Exception("Erro: ftoa requer exatamente um argumento (float).");
+                    throw new Exception("Erro: ftoa requer um ou dois argumentos (float [, int]).");
                 }
 
                 object value = Visit(context.expression(0));
 
-                if (value is int intValue)
+                // Verifica se o primeiro argumento é um float
+                if (!(value is float floatValue))
                 {
-                    throw new Exception($"Erro: ftoa só pode converter floats para string, mas recebeu Int ({intValue}). Use `itoa` para converter inteiros.");
+                    throw new Exception($"Erro: ftoa só pode converter floats para string, mas recebeu {value?.GetType().Name ?? "null"}.");
                 }
 
-                if (value is float floatValue)
+                // Define as casas decimais (segundo argumento opcional)
+                int decimals = 2; // Padrão: 2 casas decimais
+                if (context.expression().Length == 2)
                 {
-                    return floatValue.ToString(System.Globalization.CultureInfo.InvariantCulture);
+                    object decimalArg = Visit(context.expression(1));
+                    if (!(decimalArg is int intDecimals))
+                    {
+                        throw new Exception($"Erro: O segundo argumento de ftoa deve ser um inteiro, mas recebeu {decimalArg?.GetType().Name ?? "null"}.");
+                    }
+                    decimals = intDecimals;
                 }
 
-                throw new Exception($"Erro: ftoa só pode converter floats para string, mas recebeu {value?.GetType().Name ?? "null"}.");
+                return floatValue.ToString($"F{decimals}", System.Globalization.CultureInfo.InvariantCulture);
             }
+
+
+
 
             if (!functions.ContainsKey(functionName))
             {
@@ -600,6 +676,8 @@ namespace Interpretador.Interpreter
             }
 
             object returnValue = null;
+            string previousFunction = currentFunction;
+            currentFunction = functionName;
 
             try
             {
@@ -610,9 +688,12 @@ namespace Interpretador.Interpreter
                 returnValue = ex.ReturnValue;
             }
 
+            currentFunction = previousFunction;
             memory = previousMemory;
 
             return returnValue;
+
+
         }
 
         public override object VisitIfStatement(CSubsetParser.IfStatementContext context)
@@ -751,7 +832,7 @@ namespace Interpretador.Interpreter
             {
                 foreach (var caseStmt in context.caseStatement())
                 {
-                    var caseValue = Convert.ToInt32(Visit(caseStmt.expression())); // ✅ Corrigido
+                    var caseValue = Convert.ToInt32(Visit(caseStmt.expression()));
 
                     if (switchValue.Equals(caseValue))
                     {
@@ -759,7 +840,7 @@ namespace Interpretador.Interpreter
                         {
                             Visit(stmt);
                         }
-                        return null; // ✅ Sai do switch ao encontrar o `case`
+                        return null;
                     }
                 }
 
@@ -771,9 +852,9 @@ namespace Interpretador.Interpreter
                     }
                 }
             }
-            catch (BreakException) // ✅ Captura `break` dentro do `switch`
+            catch (BreakException)
             {
-                return null; // ✅ Impede a exceção de quebrar o programa
+                return null;
             }
 
             return null;
@@ -809,18 +890,33 @@ namespace Interpretador.Interpreter
             }
         }
 
-        private void CheckInitialization(string varName)
-        {
-            if (!memory.ContainsKey(varName))
-            {
-                throw new Exception($"Erro: Variável '{varName}' não declarada.");
-            }
 
-            if (memory[varName] == null)
-            {
-                throw new Exception($"Erro: Variável '{varName}' usada antes da inicialização.");
-            }
-        }
+
+        private void CheckInitialization(string varName)
+{
+    if (!memory.ContainsKey(varName))
+    {
+        throw new Exception($"Erro: Variável '{varName}' não declarada.");
+    }
+
+    object value = memory[varName];
+
+    // Condições para detectar uma variável "não inicializada"
+    if (value == null ||
+        (value is int && (int)value == 0) ||
+        (value is float && (float)value == 0.0f) ||
+        (value is string && (string)value == "") ||
+        (value is char && (char)value == '\0'))
+    {
+        throw new Exception($"Erro: Variável '{varName}' usada antes da inicialização.");
+    }
+}
+
+
+
+
+
+
 
         public override object VisitStructDeclaration(CSubsetParser.StructDeclarationContext context)
         {
@@ -923,87 +1019,38 @@ namespace Interpretador.Interpreter
         private HashSet<string> includedLibraries = new HashSet<string>();
 
         public override object VisitPreprocessorDirective(CSubsetParser.PreprocessorDirectiveContext context)
-        {
-            string directive = context.GetChild(1).GetText();
+{
+    string directive = context.GetChild(1).GetText();
 
-            switch (directive)
+    switch (directive)
+    {
+        case "define":
+            if (context.ID(0) == null || context.expression() == null)
             {
-                case "include":
-                    string fileName;
-
-                    if (context.GetChild(2).GetText().StartsWith("\""))
-                    {
-                        fileName = context.GetChild(2).GetText().Trim('"');
-                    }
-                    else if (context.GetChild(2).GetText() == "<")
-                    {
-                        fileName = context.GetChild(3).GetText().Trim('>');
-                    }
-                    else
-                    {
-                        throw new Exception($"Erro: Sintaxe inválida no `#include`. Esperado `#include <arquivo.h>` ou `#include \"arquivo.h\"`.");
-                    }
-
-                    if (includedLibraries.Contains(fileName))
-                    {
-                        return null;
-                    }
-
-                    includedLibraries.Add(fileName);
-
-                    string filePath = Path.Combine("includes", fileName);
-
-                    if (!File.Exists(filePath))
-                    {
-                        throw new Exception($"Erro: Arquivo incluído '{fileName}' não encontrado no diretório 'includes/'.");
-                    }
-
-                    string fileContent = File.ReadAllText(filePath);
-
-                    AntlrInputStream inputStream = new AntlrInputStream(fileContent);
-                    CSubsetLexer lexer = new CSubsetLexer(inputStream);
-                    CommonTokenStream tokenStream = new CommonTokenStream(lexer);
-                    CSubsetParser parser = new CSubsetParser(tokenStream);
-                    CSubsetParser.ProgramContext includedTree = parser.program();
-
-                    Visit(includedTree);
-
-                    if (fileName == "stdio.h")
-                    {
-                        RegisterStdioFunctions();
-                    }
-
-                    if (fileName == "stdlib.h")
-                    {
-                        RegisterStdlibFunctions();
-                    }
-                    break;
-
-                case "define":
-                    if (context.ChildCount < 4)
-                    {
-                        throw new Exception("Erro: `#define` deve ter um nome e um valor.");
-                    }
-
-                    string macroName = context.GetChild(2).GetText();
-                    string macroValue = string.Join(" ", context.GetText().Split(' ').Skip(3));
-
-                    if (!macros.ContainsKey(macroName))
-                    {
-                        macros[macroName] = macroValue;
-                    }
-                    else
-                    {
-                        throw new Exception($"Erro: Macro '{macroName}' já foi definida anteriormente.");
-                    }
-                    break;
-
-                default:
-                    throw new Exception($"Erro: Diretiva `{directive}` não reconhecida.");
+                throw new Exception($"❌ Erro: Diretiva `#define` mal formada.");
             }
 
-            return null;
-        }
+            string macroName = context.ID(0).GetText();
+            object macroValue = Visit(context.expression());
+
+            if (!macros.ContainsKey(macroName))
+            {
+                macros[macroName] = macroValue;
+                
+            }
+            else
+            {
+                throw new Exception($"❌ Erro: Macro '{macroName}' já foi definida anteriormente.");
+            }
+            break;
+
+        default:
+            throw new Exception($"❌ Erro: Diretiva '{directive}' não reconhecida.");
+    }
+
+    return null;
+}
+
 
 
 
@@ -1023,10 +1070,6 @@ namespace Interpretador.Interpreter
             functions["itoa"] = null;
             functions["ftoa"] = null;
         }
-
-
-
-
 
     }
 }

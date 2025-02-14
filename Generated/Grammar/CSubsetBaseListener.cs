@@ -229,6 +229,18 @@ public partial class CSubsetBaseListener : ICSubsetListener {
 	/// <param name="context">The parse tree.</param>
 	public virtual void ExitMultiplicativeExpression([NotNull] CSubsetParser.MultiplicativeExpressionContext context) { }
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="CSubsetParser.unaryExpression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void EnterUnaryExpression([NotNull] CSubsetParser.UnaryExpressionContext context) { }
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CSubsetParser.unaryExpression"/>.
+	/// <para>The default implementation does nothing.</para>
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	public virtual void ExitUnaryExpression([NotNull] CSubsetParser.UnaryExpressionContext context) { }
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="CSubsetParser.primary"/>.
 	/// <para>The default implementation does nothing.</para>
 	/// </summary>

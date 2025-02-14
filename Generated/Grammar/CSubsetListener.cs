@@ -192,6 +192,16 @@ public interface ICSubsetListener : IParseTreeListener {
 	/// <param name="context">The parse tree.</param>
 	void ExitMultiplicativeExpression([NotNull] CSubsetParser.MultiplicativeExpressionContext context);
 	/// <summary>
+	/// Enter a parse tree produced by <see cref="CSubsetParser.unaryExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void EnterUnaryExpression([NotNull] CSubsetParser.UnaryExpressionContext context);
+	/// <summary>
+	/// Exit a parse tree produced by <see cref="CSubsetParser.unaryExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	void ExitUnaryExpression([NotNull] CSubsetParser.UnaryExpressionContext context);
+	/// <summary>
 	/// Enter a parse tree produced by <see cref="CSubsetParser.primary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>

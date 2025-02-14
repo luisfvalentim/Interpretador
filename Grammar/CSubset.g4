@@ -1,11 +1,11 @@
 grammar CSubset;
 
-program : preprocessorDirective* (statement | functionCall)* EOF; // ✅ Agora permite diretivas de pré-processador
+program : preprocessorDirective* (statement | functionCall)* EOF; 
 
 preprocessorDirective
-    : '#' 'include' ('<' ID '.' ID '>' | STRING) // ✅ `#include <stdio.h>` ou `#include "arquivo.h"`
-    | '#' 'define' ID expression // ✅ `#define TAMANHO 10`
-    | '#' 'error' STRING // ✅ `#error "Mensagem"`
+    : '#' 'include' ('<' ID '.' ID '>' | STRING) 
+    | '#' 'define' ID expression 
+    | '#' 'error' STRING 
     ;
 
 statement 
@@ -60,6 +60,7 @@ block
 logicalExpression
     : equalityExpression
     | logicalExpression ('&&' | '||') equalityExpression
+    | '!' logicalExpression
     ;
 
 equalityExpression
@@ -82,6 +83,11 @@ multiplicativeExpression
     | multiplicativeExpression ('*'|'/'|'%') primary
     ;
 
+unaryExpression
+    : '!' unaryExpression
+    | primary
+    ;
+
 primary
     : NUMBER
     | ID ('[' expression ']')?  
@@ -90,7 +96,6 @@ primary
     | CHAR 
     | structInstance  
     | unionInstance  
-    | '!' primary
     | '(' expression ')'
     ;
 

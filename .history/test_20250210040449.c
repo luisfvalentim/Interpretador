@@ -1,7 +1,0 @@
-
-printf("Olá, mundo!\n");
- 
-
-
-
-

@@ -129,6 +129,12 @@ public interface ICSubsetVisitor<Result> : IParseTreeVisitor<Result> {
 	/// <return>The visitor result.</return>
 	Result VisitMultiplicativeExpression([NotNull] CSubsetParser.MultiplicativeExpressionContext context);
 	/// <summary>
+	/// Visit a parse tree produced by <see cref="CSubsetParser.unaryExpression"/>.
+	/// </summary>
+	/// <param name="context">The parse tree.</param>
+	/// <return>The visitor result.</return>
+	Result VisitUnaryExpression([NotNull] CSubsetParser.UnaryExpressionContext context);
+	/// <summary>
 	/// Visit a parse tree produced by <see cref="CSubsetParser.primary"/>.
 	/// </summary>
 	/// <param name="context">The parse tree.</param>
